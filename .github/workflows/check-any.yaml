@@ -38,9 +38,9 @@ jobs:
           exit `go build ./... 2>&1|grep -c warning`
         continue-on-error: true
 
-      - name: Run asasalint
+      - name: Run Linter
         if: steps.check_go_mod.outcome == 'success'
         run: |
           cd `ls`
 
-          copyandpaste ./... || (test $? -eq 1) && exit 0
+          sundrylint ./... || (test $? -eq 1) && exit 0
