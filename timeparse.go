@@ -6,7 +6,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
-const TimeParseLintMessage = "call func time.Parse may have incorrect parameters, potentially swapping the layout and value arguments."
+const TimeParseLintMessage = "call func time.Parse may have incorrect args order, potentially swapping the layout and value arguments."
 
 const (
 	timePkgPath = `time`
@@ -21,7 +21,7 @@ func isTimeParseFunc(pass *analysis.Pass, node *ast.CallExpr) bool {
 	return IsFunc(pass, node, timeParseFunc) && IsPkg(pass, node.Fun, timePkgPath)
 }
 
-func processTimeParse(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diagnostic) {
+func LintTimeParseWrongArgsOrder(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diagnostic) {
 	if !isTimeParseFunc(pass, node) {
 		return nil
 	}
