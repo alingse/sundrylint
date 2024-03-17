@@ -1,6 +1,9 @@
 package timeparse
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 const Format = "2006"
 
@@ -17,6 +20,7 @@ func callTimeParse() {
 	_, _ = time.Parse(date, timeFormatAny.(string))
 	var dates = []string{date}
 	_, _ = time.Parse(date, dates[0])
+	_, _ = time.Parse(date, fmt.Sprintf("%s-%s", "2006", "-1"))
 
 	var f = time.Parse
 	_, _ = f(date, time.DateTime)
