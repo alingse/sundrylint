@@ -16,6 +16,11 @@ func IsVar(pass *analysis.Pass, e ast.Expr) bool {
 }
 
 func IsConst(pass *analysis.Pass, e ast.Expr) bool {
+	switch e.(type) {
+	case *ast.TypeAssertExpr:
+		return false
+	}
+
 	tv := pass.TypesInfo.Types[e]
 	if tv.Addressable() || tv.Assignable() {
 		return false
