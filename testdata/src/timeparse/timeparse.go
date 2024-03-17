@@ -15,6 +15,8 @@ func callTimeParse() {
 	_, _ = time.Parse(date, FormatVar)
 	timeFormatAny := any(time.DateOnly)
 	_, _ = time.Parse(date, timeFormatAny.(string))
+	var dates = []string{date}
+	_, _ = time.Parse(date, dates[0])
 
 	var f = time.Parse
 	_, _ = f(date, time.DateTime)
