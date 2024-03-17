@@ -13,8 +13,9 @@ const (
 )
 
 var timeParseFunc = FuncType{
-	ArgsNum:   2,
-	Signature: `func(layout string, value string) (time.Time, error)`,
+	ArgsNum:    2,
+	Signature:  `func(layout string, value string) (time.Time, error)`,
+	ResultsNum: 2,
 }
 
 func isTimeParseFunc(pass *analysis.Pass, node *ast.CallExpr) bool {

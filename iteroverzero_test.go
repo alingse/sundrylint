@@ -12,7 +12,7 @@ func TestAnalyzerIterOverZero(t *testing.T) {
 		settings LinterSetting
 	}{
 		{
-			desc:     "timeparse",
+			desc:     "iteroverzero",
 			settings: LinterSetting{},
 		},
 	}

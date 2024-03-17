@@ -43,8 +43,9 @@ func IsPkg(pass *analysis.Pass, e ast.Expr, pkgPath string) bool {
 }
 
 type FuncType struct {
-	ArgsNum   int
-	Signature string
+	ArgsNum    int
+	Signature  string
+	ResultsNum int
 }
 
 func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
@@ -53,8 +54,39 @@ func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 	}
 
 	sign, ok := pass.TypesInfo.TypeOf(node.Fun).(*types.Signature)
-	if !ok || sign.String() != fnType.Signature {
+	if !ok {
+		return false
+	}
+	if sign.String() != fnType.Signature {
+		return false
+	}
+	if sign.Params().Len() != fnType.ArgsNum {
+		return false
+	}
+	if sign.Results().Len() != fnType.ResultsNum {
 		return false
 	}
 	return true
+}
+
+// restOfBlock, given a traversal stack, finds the innermost containing
+// block and returns the suffix of its statements starting with the current
+// node, along with the number of call expressions encountered.
+func restOfBlock(stack []ast.Node) ([]ast.Stmt, int) {
+	var ncalls int
+	for i := len(stack) - 1; i >= 0; i-- {
+		if b, ok := stack[i].(*ast.BlockStmt); ok {
+			for j, v := range b.List {
+				if v == stack[i+1] {
+					return b.List[j:], ncalls
+				}
+			}
+			break
+		}
+
+		if _, ok := stack[i].(*ast.CallExpr); ok {
+			ncalls++
+		}
+	}
+	return nil, 0
 }
