@@ -21,6 +21,8 @@ func callTimeParse() {
 	var dates = []string{date}
 	_, _ = time.Parse(date, dates[0])
 	_, _ = time.Parse(date, fmt.Sprintf("%s-%s", "2006", "-1"))
+	var strPtr = &date
+	_, _ = time.Parse(date, *strPtr)
 
 	var f = time.Parse
 	_, _ = f(date, time.DateTime)

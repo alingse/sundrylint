@@ -18,6 +18,8 @@ func IsVar(pass *analysis.Pass, e ast.Expr) bool {
 func IsConst(pass *analysis.Pass, e ast.Expr) bool {
 	switch e.(type) {
 	case *ast.SelectorExpr, *ast.BasicLit, *ast.Ident:
+	case *ast.TypeAssertExpr, *ast.CallExpr, *ast.IndexExpr, *ast.StarExpr:
+		return false
 	default:
 		return false
 	}
