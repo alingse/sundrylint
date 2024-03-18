@@ -3,6 +3,7 @@ package sundrylint
 import (
 	"go/ast"
 	"go/types"
+	"strings"
 
 	"golang.org/x/tools/go/analysis"
 )
@@ -67,6 +68,18 @@ func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 		return false
 	}
 	return true
+}
+
+func IsTestFile(pass *analysis.Pass, node ast.Expr) bool {
+	if strings.HasSuffix(pass.Fset.Position(node.Pos()).Filename, "_test.go") {
+		return true
+	}
+	return false
+}
+
+func IsBasicLit(node ast.Expr) bool {
+	_, ok := node.(*ast.BasicLit)
+	return ok
 }
 
 // restOfBlock, given a traversal stack, finds the innermost containing

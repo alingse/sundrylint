@@ -26,7 +26,13 @@ func LintTimeParseWrongArgsOrder(pass *analysis.Pass, node *ast.CallExpr) (ds []
 	if !isTimeParseFunc(pass, node) {
 		return nil
 	}
+
 	if IsVar(pass, node.Args[0]) && IsConst(pass, node.Args[1]) {
+		// skip for case `time.Parse(layout, "2015")` in _test.go
+		if IsTestFile(pass, node) && IsBasicLit(node.Args[1]) {
+			return nil
+		}
+
 		return []analysis.Diagnostic{
 			{
 				Pos:      node.Pos(),
