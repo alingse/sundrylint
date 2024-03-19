@@ -6,7 +6,7 @@ import (
 
 func FuncResultUnused() {
 	var num int64 = 10
-	strconv.FormatInt(num, 10)
+	strconv.FormatInt(num, 10) // want `func result unused`
 
 	_ = strconv.FormatBool(true)
 	_ = map[string]string{
