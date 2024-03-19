@@ -15,6 +15,14 @@ func TestAnalyzerTimeParse(t *testing.T) {
 			desc:     "timeparse",
 			settings: LinterSetting{},
 		},
+		{
+			desc:     "iteroverzero",
+			settings: LinterSetting{},
+		},
+		{
+			desc:     "funcresultunused",
+			settings: LinterSetting{},
+		},
 	}
 
 	for _, test := range testCases {

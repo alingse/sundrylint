@@ -70,11 +70,30 @@ func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 	return true
 }
 
-func IsTestFile(pass *analysis.Pass, node ast.Expr) bool {
-	if strings.HasSuffix(pass.Fset.Position(node.Pos()).Filename, "_test.go") {
-		return true
+func IsBasicType(typ types.Type) bool {
+	if basicType, ok := typ.(*types.Basic); ok {
+		kind := basicType.Kind()
+		switch kind {
+		case types.Bool, types.Int, types.Int8, types.Int16, types.Int32, types.Int64,
+			types.Uint, types.Uint8, types.Uint16, types.Uint32, types.Uint64,
+			types.Float32, types.Float64, types.Complex64, types.Complex128, types.String:
+			return true
+		}
 	}
 	return false
+}
+
+func IsTupleAll(tp *types.Tuple, predict func(types.Type) bool) bool {
+	for i := 0; i < tp.Len(); i++ {
+		if !predict(tp.At(i).Type()) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsTestFile(pass *analysis.Pass, node ast.Expr) bool {
+	return strings.HasSuffix(pass.Fset.Position(node.Pos()).Filename, "_test.go")
 }
 
 func IsBasicLit(node ast.Expr) bool {
