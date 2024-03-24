@@ -2,6 +2,8 @@ package funcresultunused
 
 import (
 	"strconv"
+
+	"funcresultunused/demo"
 )
 
 func FuncResultUnused() {
@@ -17,6 +19,9 @@ func FuncResultUnused() {
 	s.FormatStructBool(true)
 	// nolint:staticcheck
 	strconv.FormatBool(true) // want `func result unused`
+
+	demo.FormatAny()   // want `func result unused`
+	demo.FormatAny2(0) // want `func result unused`
 }
 
 type XXStruct struct{}

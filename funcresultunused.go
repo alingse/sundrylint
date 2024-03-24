@@ -10,16 +10,12 @@ import (
 const FuncResultUnusedMessage = "func result unused"
 
 func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (ds []analysis.Diagnostic) {
-	if len(node.Args) == 0 {
-		return nil
-	}
-
 	// check sign
 	sign, ok := pass.TypesInfo.TypeOf(node.Fun).(*types.Signature)
 	if !ok || sign.Recv() != nil {
 		return nil
 	}
-	if sign.Params().Len() == 0 || sign.Results().Len() == 0 {
+	if sign.Results().Len() == 0 {
 		return nil
 	}
 	if !IsTupleAll(sign.Params(), IsBasicType) || !IsTupleAll(sign.Results(), IsBasicType) {
@@ -44,7 +40,7 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 	}
 	lastNode := stack[len(stack)-2]
 	switch lastNode.(type) {
-	case *ast.AssignStmt:
+	case *ast.AssignStmt, *ast.KeyValueExpr, *ast.ReturnStmt:
 		return nil
 	case *ast.ExprStmt:
 		return []analysis.Diagnostic{
@@ -55,6 +51,7 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 				Message:  FuncResultUnusedMessage,
 			},
 		}
+	default:
 	}
 	return nil
 }
