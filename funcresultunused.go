@@ -13,23 +13,32 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 	if len(node.Args) == 0 {
 		return nil
 	}
+
+	// check sign
 	sign, ok := pass.TypesInfo.TypeOf(node.Fun).(*types.Signature)
-	if !ok {
+	if !ok || sign.Recv() != nil {
 		return nil
 	}
-	if sign.Recv() != nil {
+	if sign.Params().Len() == 0 || sign.Results().Len() == 0 {
+		return nil
+	}
+	if !IsTupleAll(sign.Params(), IsBasicType) || !IsTupleAll(sign.Results(), IsBasicType) {
 		return nil
 	}
 
-	if sign.Results().Len() == 0 || sign.Params().Len() == 0 {
-		return nil
+	// check is not a obj.Func
+	if se, ok := node.Fun.(*ast.SelectorExpr); ok {
+		fnObj := pass.TypesInfo.ObjectOf(se.Sel)
+		// has a receiver
+		if sign, ok := fnObj.Type().(*types.Signature); ok && sign.Recv() != nil {
+			return nil
+		}
+		// not a call from pkg.XXX
+		if xtype, ok := pass.TypesInfo.TypeOf(se.X).(*types.Basic); !ok || xtype.Kind() != types.Invalid {
+			return nil
+		}
 	}
-	if !IsTupleAll(sign.Params(), IsBasicType) {
-		return nil
-	}
-	if !IsTupleAll(sign.Results(), IsBasicType) {
-		return nil
-	}
+
 	if len(stack) < 2 {
 		return nil
 	}
