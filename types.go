@@ -1,7 +1,11 @@
 package sundrylint
 
 import (
+	"bytes"
+	"fmt"
 	"go/ast"
+	"go/printer"
+	"go/token"
 	"go/types"
 	"strings"
 
@@ -68,6 +72,14 @@ func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 		return false
 	}
 	return true
+}
+
+func GetCode(fset *token.FileSet, node any) (string, error) {
+	buf := new(bytes.Buffer)
+	if err := printer.Fprint(buf, fset, node); err != nil {
+		return "", fmt.Errorf("unable to print node for %+v: %w", node, err)
+	}
+	return buf.String(), nil
 }
 
 func IsBasicType(typ types.Type) bool {

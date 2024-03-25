@@ -7,7 +7,10 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
-const FuncResultUnusedMessage = "func result unused"
+var skipFuncs = map[string]bool{
+	"debug.SetGCPercent": true,
+	"runtime.GOMAXPROCS": true,
+}
 
 func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (ds []analysis.Diagnostic) {
 	// check sign
@@ -19,6 +22,11 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 		return nil
 	}
 	if !IsTupleAll(sign.Params(), IsBasicType) {
+		return nil
+	}
+	funcName, err := GetCode(pass.Fset, node.Fun)
+	// skip for fname
+	if err != nil || skipFuncs[funcName] {
 		return nil
 	}
 
@@ -48,7 +56,7 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 				Pos:      node.Pos(),
 				End:      node.End(),
 				Category: LinterName,
-				Message:  FuncResultUnusedMessage,
+				Message:  "func " + funcName + " return result is unused",
 			},
 		}
 	default:
