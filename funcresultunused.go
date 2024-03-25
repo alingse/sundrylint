@@ -21,7 +21,7 @@ func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.N
 	if sign.Results().Len() == 0 {
 		return nil
 	}
-	if !IsTupleAll(sign.Params(), IsBasicType) {
+	if !IsTupleAll(sign.Params(), IsBasicType) || !IsTupleAll(sign.Results(), IsBasicType) {
 		return nil
 	}
 	funcName, err := GetCode(pass.Fset, node.Fun)
