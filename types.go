@@ -36,34 +36,93 @@ func IsConst(pass *analysis.Pass, e ast.Expr) bool {
 	return true
 }
 
-func IsPkg(pass *analysis.Pass, e ast.Expr, pkgPath string) bool {
-	if selectExpr, ok := e.(*ast.SelectorExpr); ok {
-		obj := pass.TypesInfo.ObjectOf(selectExpr.Sel)
-		if obj == nil || obj.Pkg().Path() != pkgPath {
-			return false
-		}
-		return true
+func GetFuncExprIdent(pass *analysis.Pass, e ast.Expr) *ast.Ident {
+	switch et := e.(type) {
+	case *ast.SelectorExpr:
+		return et.Sel
+	case *ast.Ident:
+		return et
+	}
+	return nil
+}
+
+func IsFuncPkg(pass *analysis.Pass, fn *ast.CallExpr, pkgPath string) bool {
+	pkg := GetFuncExprPkg(pass, fn.Fun)
+	if pkg != nil {
+		return pkg.Path() == pkgPath
 	}
 	return false
 }
 
-type FuncType struct {
-	ArgsNum    int
-	Signature  string
-	ResultsNum int
+func GetFuncExprPkg(pass *analysis.Pass, e ast.Expr) *types.Package {
+	ident := GetFuncExprIdent(pass, e)
+	if ident == nil {
+		return nil
+	}
+	return GetIdentPkg(pass, ident)
 }
 
-func IsFunc(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
+func GetIdentPkg(pass *analysis.Pass, ident *ast.Ident) *types.Package {
+	obj := pass.TypesInfo.ObjectOf(ident)
+	if obj == nil {
+		return nil
+	}
+	return obj.Pkg()
+}
+
+func GetFuncExprObject(pass *analysis.Pass, fn *ast.CallExpr) types.Object {
+	ident := GetFuncExprIdent(pass, fn.Fun)
+	if ident == nil {
+		return nil
+	}
+	obj := pass.TypesInfo.ObjectOf(ident)
+	return obj
+}
+
+func IsBuiltinFunc(pass *analysis.Pass, fn *ast.CallExpr, name string) bool {
+	obj := GetFuncExprObject(pass, fn)
+	if obj == nil {
+		return false
+	}
+	bo, ok := obj.(*types.Builtin)
+	if !ok {
+		return false
+	}
+	return bo.Name() == name
+}
+
+type FuncType struct {
+	FuncName    string
+	ArgsNum     int
+	Signature   string
+	ResultsNum  int
+	Variadic    bool
+	UseVariadic bool
+}
+
+func IsFuncType(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 	if len(node.Args) != fnType.ArgsNum {
 		return false
+	}
+
+	if fnType.Variadic {
+		useVariadic := node.Ellipsis != token.NoPos
+		if fnType.UseVariadic != useVariadic {
+			return false
+		}
 	}
 
 	sign, ok := pass.TypesInfo.TypeOf(node.Fun).(*types.Signature)
 	if !ok {
 		return false
 	}
-	if sign.String() != fnType.Signature {
+	if sign.Variadic() != fnType.Variadic {
 		return false
+	}
+	if fnType.Signature != "" {
+		if sign.String() != fnType.Signature {
+			return false
+		}
 	}
 	if sign.Params().Len() != fnType.ArgsNum {
 		return false
@@ -80,6 +139,11 @@ func GetCode(fset *token.FileSet, node any) (string, error) {
 		return "", fmt.Errorf("unable to print node for %+v: %w", node, err)
 	}
 	return buf.String(), nil
+}
+
+func GetCodeSafe(fset *token.FileSet, node any) string {
+	code, _ := GetCode(fset, node)
+	return code
 }
 
 func IsBasicType(typ types.Type) bool {

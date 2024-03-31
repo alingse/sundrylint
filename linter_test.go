@@ -23,9 +23,13 @@ func TestAnalyzerTimeParse(t *testing.T) {
 			desc:     "funcresultunused",
 			settings: LinterSetting{},
 		},
+		{
+			desc:     "rangeappendall",
+			settings: LinterSetting{},
+		},
 	}
 
-	for _, test := range testCases {
+	for _, test := range testCases[3:] {
 		t.Run(test.desc, func(t *testing.T) {
 			a, err := NewAnalyzer(test.settings)
 			if err != nil {

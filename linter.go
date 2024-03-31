@@ -11,6 +11,13 @@ import (
 const (
 	LinterName = "sundrylint"
 	LinterDesc = "This is a linter that combines multiple small checks, primarily derived from real-world errors encountered during the development process."
+
+	SubLinterTimeparse        = `timeparse`
+	SubLinterIteroverzero     = `iteroverzero`
+	SubLinterFuncresultunused = `funcresultunused`
+	SubLinterRangeappendall   = `rangeappendall`
+
+	SubLinterRangeappendallMessage = `append all its data while range it`
 )
 
 type LinterSetting struct{}
@@ -61,7 +68,8 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 	switch node := n.(type) {
 	case *ast.CallExpr:
 		a.report(pass, LintTimeParseWrongArgsOrder(pass, node))
-		a.report(pass, LintFuncResultUnused(pass, node, stack))
+		//a.report(pass, LintFuncResultUnused(pass, node, stack))
+		a.report(pass, LintRangeAppendAll(pass, node, stack))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
 	}

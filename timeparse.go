@@ -19,7 +19,7 @@ var timeParseFunc = FuncType{
 }
 
 func isTimeParseFunc(pass *analysis.Pass, node *ast.CallExpr) bool {
-	return IsFunc(pass, node, timeParseFunc) && IsPkg(pass, node.Fun, timePkgPath)
+	return IsFuncType(pass, node, timeParseFunc) && IsFuncPkg(pass, node, timePkgPath)
 }
 
 func LintTimeParseWrongArgsOrder(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diagnostic) {
