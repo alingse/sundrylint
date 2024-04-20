@@ -225,3 +225,5 @@ test
 text
 help
 pool
+keyword
+add
