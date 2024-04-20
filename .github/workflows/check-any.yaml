@@ -1,4 +1,5 @@
-name: Check Any Input Repo Flow
+name: Check Repo with linter
+run-name: "Linter ${{ github.event.inputs.linter_name }} for repo ${{ github.event.inputs.repo_url }}"
 
 on:
   workflow_dispatch:
