@@ -7,6 +7,14 @@ on:
         description: "Any Github Golang Repo link"
         default: ""
         required: true
+      linter_url:
+        description: "Some Linter install"
+        required: false
+        default: "github.com/alingse/sundrylint/cmd/sundrylint@main"
+      linter_name:
+        description: "linter name (or with option)"
+        required: false
+        default: "sundrylint"
 
 jobs:
   checker:
@@ -15,10 +23,10 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v3.2.0
         with:
-          go-version: 1.21
+          go-version: 1.22
 
       - name: Install
-        run: go install github.com/alingse/sundrylint/cmd/sundrylint@main
+        run: go install "${{ github.event.inputs.linter_url }}"
 
       - name: Git Clone
         run: git clone "${{ github.event.inputs.repo_url }}"
@@ -43,4 +51,4 @@ jobs:
         run: |
           cd `ls`
 
-          sundrylint ./... || (test $? -eq 1) && exit 0
+          ${{ github.event.inputs.linter_name }} ./... || (test $? -eq 1) && exit 0
