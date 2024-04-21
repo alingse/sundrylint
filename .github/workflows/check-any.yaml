@@ -52,5 +52,4 @@ jobs:
         run: |
           cd `ls`
 
-          ${{ github.event.inputs.linter_name }} ./...
-        # ${{ github.event.inputs.linter_name }} ./... || (test $? -eq 1) && exit 0
+          ${{ github.event.inputs.linter_name }} ./... 2>/dev/null | grep -q '.go'
