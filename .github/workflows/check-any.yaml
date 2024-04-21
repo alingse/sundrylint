@@ -51,5 +51,6 @@ jobs:
         if: steps.check_go_mod.outcome == 'success'
         run: |
           cd `ls`
-
-          ${{ github.event.inputs.linter_name }} ./... 2>/dev/null | grep -q '.go'
+          ${{ github.event.inputs.linter_name }} ./... 1>check.run.log 2>/dev/null
+          cat check.run.log
+          cat check.run.log|grep -q '.go'
