@@ -1,5 +1,5 @@
 name: Check Repo with linter
-run-name: "Linter ${{ github.event.inputs.linter_name }} for repo ${{ github.event.inputs.repo_url }}"
+run-name: "Lint repo ${{ github.event.inputs.repo_url }} with Linter ${{ github.event.inputs.linter_name }}"
 
 on:
   workflow_dispatch:
