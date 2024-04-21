@@ -53,4 +53,4 @@ jobs:
           cd `ls`
           ${{ github.event.inputs.linter_name }} ./... 1>check.run.log 2>&1
           cat check.run.log
-          exit `cat check.run.log|grep -c 'no-zero'`
+          exit `cat check.run.log|grep -c 'non-zero'`
