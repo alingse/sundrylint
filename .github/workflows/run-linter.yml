@@ -1,4 +1,4 @@
-name: Main Workflow
+name: Run go-linter-runner for repos
 
 on:
   push:
