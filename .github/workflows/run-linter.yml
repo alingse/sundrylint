@@ -8,7 +8,7 @@ permissions:
   issues: write
 
 jobs:
-  use-composite-action:
+  test-go-linter-runner:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
