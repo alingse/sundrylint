@@ -1,0 +1,20 @@
+name: Main Workflow
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  issues: write
+
+jobs:
+  use-composite-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: alingse/go-linter-runner@main
+        with:
+          install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@main
+          linter_command: sundrylint
+          repo_url: https://github.com/alingse/sundrylint
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
