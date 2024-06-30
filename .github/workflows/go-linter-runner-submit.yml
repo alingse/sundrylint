@@ -1,5 +1,5 @@
 name: submit-repos
-run-name: "submit repo urls for go-linter-runner.yml"
+run-name: "Submit ${{inputs.count}} repos for ${{ inputs.workflow }} from ${{ inputs.source }}"
 
 on:
   workflow_dispatch:
@@ -30,8 +30,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Example -> go-linter-runner submit 10 repos
-        uses: alingse/go-linter-runner@v1.0.0
+      - name: Run go-linter-runner to submit repos
+        uses: alingse/go-linter-runner@v1.0.1
         with:
           action: submit
           submit_source_file: ${{ inputs.source }}
