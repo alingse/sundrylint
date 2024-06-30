@@ -1,0 +1,32 @@
+name: run-repo
+run-name: "run `makezero` for ${{github.event.inputs.repo_url}}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: "the repo to run linter"
+        default: "https://github.com/alingse/makezero"
+        required: true
+
+permissions:
+  issues: write
+
+jobs:
+  go-linter-runner-for-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run go-linter-runner use direct job config
+        uses: alingse/go-linter-runner@v1.0.0
+        with:
+          action: run
+          install_command: go build -o /usr/local/bin/sundrylint cmd/sundrylint/main.go
+          linter_command: sundrylint
+          includes: '["go", "github"]'
+          excludes: "[]"
+          issue_id: 3
+          repo_url: ${{ inputs.repo_url }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

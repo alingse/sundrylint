@@ -1,0 +1,36 @@
+name: submit-repos
+run-name: "submit repo urls for go-linter-runner.yml"
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: |
+          total submit repo count
+          Default '1000'
+        default: "1000"
+      workflow:
+        description: |
+          the workflow to submit with each repo
+          Default 'go-linter-runner.yml'
+        default: "go-linter-runner.yml"
+
+permissions:
+  actions: write
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Example -> go-linter-runner submit 10 repos
+        uses: alingse/go-linter-runner@v1.0.0
+        with:
+          action: submit
+          submit_source_file: top.txt
+          submit_repo_count: ${{ inputs.count }}
+          submit_workflow: ${{ inputs.workflow }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
