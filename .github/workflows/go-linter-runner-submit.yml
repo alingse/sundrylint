@@ -4,6 +4,11 @@ run-name: "submit repo urls for go-linter-runner.yml"
 on:
   workflow_dispatch:
     inputs:
+      source:
+        description: |
+          can be 'top.txt' or  'awesome.txt' or some 'https://xxx' download link
+          Default 'awesome.txt'
+        default: "awesome.txt"
       count:
         description: |
           total submit repo count
@@ -29,7 +34,7 @@ jobs:
         uses: alingse/go-linter-runner@v1.0.0
         with:
           action: submit
-          submit_source_file: top.txt
+          submit_source_file: ${{ inputs.source }}
           submit_repo_count: ${{ inputs.count }}
           submit_workflow: ${{ inputs.workflow }}
         env:
