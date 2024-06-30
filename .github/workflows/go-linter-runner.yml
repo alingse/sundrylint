@@ -1,12 +1,12 @@
 name: run-repo
-run-name: "run `makezero` for ${{github.event.inputs.repo_url}}"
+run-name: "run `sundrylint` for ${{github.event.inputs.repo_url}}"
 
 on:
   workflow_dispatch:
     inputs:
       repo_url:
         description: "the repo to run linter"
-        default: "https://github.com/alingse/makezero"
+        default: "https://github.com/alingse/sundrylint"
         required: true
 
 permissions:
