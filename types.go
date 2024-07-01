@@ -177,6 +177,20 @@ func IsBasicLit(node ast.Expr) bool {
 	return ok
 }
 
+func IsCompositeLit(node ast.Expr) bool {
+	return IsType[*ast.CompositeLit](node)
+}
+
+func IsType[T any](node ast.Expr) bool {
+	_, ok := node.(T)
+	return ok
+}
+
+func IsIdentNil(node ast.Expr) bool {
+	v, ok := node.(*ast.Ident)
+	return ok && v.Name == "nil" && v.Obj == nil
+}
+
 // restOfBlock, given a traversal stack, finds the innermost containing
 // block and returns the suffix of its statements starting with the current
 // node, along with the number of call expressions encountered.

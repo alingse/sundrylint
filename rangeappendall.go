@@ -20,11 +20,16 @@ func LintRangeAppendAll(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Nod
 	if !(IsFuncType(pass, node, appendFunc) && IsBuiltinFunc(pass, node, appendFuncName)) {
 		return nil
 	}
-
+	// check second args is an ident
 	appendIdent, ok := node.Args[1].(*ast.Ident)
 	if !ok {
 		return nil
 	}
+	// check first is []T{} or []T(nil) or []T{x1}
+	if isInitSlice(node.Args[0]) {
+		return nil
+	}
+	// fetch the top is a `range`
 	blockStmt, rangeStmt := fetchBlockAndRangeStmt(stack)
 	if blockStmt == nil || rangeStmt == nil {
 		return nil
@@ -67,4 +72,18 @@ func fetchBlockAndRangeStmt(stack []ast.Node) (*ast.BlockStmt, *ast.RangeStmt) {
 		}
 	}
 	return block, nil
+}
+
+func isInitSlice(expr ast.Expr) bool {
+	switch v := expr.(type) {
+	case *ast.CompositeLit:
+		// []T{}, []T{n}
+		return true
+	case *ast.CallExpr:
+		// []T(nil)
+		if IsType[*ast.ArrayType](v.Fun) && len(v.Args) == 1 && IsIdentNil(v.Args[0]) {
+			return true
+		}
+	}
+	return false
 }
