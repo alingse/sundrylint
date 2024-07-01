@@ -22,6 +22,7 @@ jobs:
         uses: alingse/go-linter-runner@v1.0.1
         with:
           action: run
+          go_version: '1.22.4'
           install_command: go build -o /usr/local/bin/sundrylint cmd/sundrylint/main.go
           linter_command: sundrylint
           includes: '["go", "github"]'
