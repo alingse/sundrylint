@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run go-linter-runner to submit repos
-        uses: alingse/go-linter-runner@6a9360869701e6616b63fe9aa3a17d0f1691154c
+        uses: alingse/go-linter-runner@91ac2a7e795b0d31cfa43185178d01e42c67b2e0
         with:
           action: submit
           submit_source_file: ${{ inputs.source }}
