@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run go-linter-runner use direct job config
-        uses: alingse/go-linter-runner@a055fa5a67f67632d06bfb0a17d294a2a872a5f6
+        uses: alingse/go-linter-runner@6a9360869701e6616b63fe9aa3a17d0f1691154c
         with:
           action: run
           go_version: "1.22.4"
