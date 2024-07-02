@@ -25,7 +25,7 @@ jobs:
           go_version: "1.22.4"
           install_command: go build -o /usr/local/bin/sundrylint cmd/sundrylint/main.go
           linter_command: sundrylint
-          includes: '["append all its data while range it"]'
+          includes: '["append all its data while range it", "return result is unused"]'
           excludes: "[]"
           issue_id: 3
           repo_url: ${{ inputs.repo_url }}
