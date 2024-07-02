@@ -6,7 +6,7 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestAnalyzerTimeParse(t *testing.T) {
+func TestAnalyzerSundryLint(t *testing.T) {
 	testCases := []struct {
 		desc     string
 		settings LinterSetting
@@ -29,7 +29,7 @@ func TestAnalyzerTimeParse(t *testing.T) {
 		},
 	}
 
-	for _, test := range testCases[3:] {
+	for _, test := range testCases {
 		t.Run(test.desc, func(t *testing.T) {
 			a, err := NewAnalyzer(test.settings)
 			if err != nil {

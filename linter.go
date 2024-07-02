@@ -41,9 +41,7 @@ type analyzer struct {
 }
 
 func newAnalyzer(setting LinterSetting) (*analyzer, error) {
-	a := &analyzer{
-		setting: setting,
-	}
+	a := &analyzer{setting: setting}
 	return a, nil
 }
 
@@ -68,7 +66,7 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 	switch node := n.(type) {
 	case *ast.CallExpr:
 		a.report(pass, LintTimeParseWrongArgsOrder(pass, node))
-		//a.report(pass, LintFuncResultUnused(pass, node, stack))
+		a.report(pass, LintFuncResultUnused(pass, node, stack))
 		a.report(pass, LintRangeAppendAll(pass, node, stack))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
