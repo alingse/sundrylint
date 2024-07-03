@@ -13,6 +13,9 @@ var skipFuncs = map[string]bool{
 }
 
 func LintFuncResultUnused(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (ds []analysis.Diagnostic) {
+	if IsTestFile(pass, node) {
+		return nil
+	}
 	// check sign
 	sign, ok := pass.TypesInfo.TypeOf(node.Fun).(*types.Signature)
 	if !ok || sign.Recv() != nil {
