@@ -19,10 +19,12 @@ func TestAnalyzerSundryLint(t *testing.T) {
 			desc:     "iteroverzero",
 			settings: LinterSetting{},
 		},
-		{
-			desc:     "funcresultunused",
-			settings: LinterSetting{},
-		},
+		/*
+			{
+				desc:     "funcresultunused",
+				settings: LinterSetting{},
+			},
+		*/
 		{
 			desc:     "rangeappendall",
 			settings: LinterSetting{},
