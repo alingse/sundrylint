@@ -16,15 +16,7 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
-var Analyzer = &analysis.Analyzer{
-	Name:     "nilness",
-	Doc:      "",
-	URL:      "https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/nilness",
-	Run:      run,
-	Requires: []*analysis.Analyzer{buildssa.Analyzer},
-}
-
-func run(pass *analysis.Pass) (interface{}, error) {
+func (a *analyzer) checkNilness(pass *analysis.Pass) (interface{}, error) {
 	ssainput := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
 	for _, fn := range ssainput.SrcFuncs {
 		runFunc(pass, fn)

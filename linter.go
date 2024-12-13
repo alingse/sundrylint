@@ -4,6 +4,7 @@ import (
 	"go/ast"
 
 	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
 )
@@ -29,10 +30,13 @@ func NewAnalyzer(setting LinterSetting) (*analysis.Analyzer, error) {
 	}
 
 	return &analysis.Analyzer{
-		Name:     LinterName,
-		Doc:      LinterDesc,
-		Run:      a.run,
-		Requires: []*analysis.Analyzer{inspect.Analyzer},
+		Name: LinterName,
+		Doc:  LinterDesc,
+		Run:  a.run,
+		Requires: []*analysis.Analyzer{
+			inspect.Analyzer,
+			buildssa.Analyzer,
+		},
 	}, nil
 }
 
@@ -46,6 +50,12 @@ func newAnalyzer(setting LinterSetting) (*analyzer, error) {
 }
 
 func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
+	_, _ = a.checkInspect(pass)
+	_, _ = a.checkNilness(pass)
+	return nil, nil
+}
+
+func (a *analyzer) checkInspect(pass *analysis.Pass) (interface{}, error) {
 	inspectorInfo := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	checkNodes := []ast.Node{
 		(*ast.CallExpr)(nil),
