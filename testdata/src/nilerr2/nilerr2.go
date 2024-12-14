@@ -26,9 +26,7 @@ func Call() error {
 	}
 	err2 := Do2()
 	if err2 != nil {
-		// TODO: this is call over nil and return a nil
-		_ = err1.Error()
-		return err1
+		return err1 // want `return a error variable but it's nil`
 	}
 	return nil
 }

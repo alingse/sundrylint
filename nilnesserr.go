@@ -16,6 +16,8 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
+var errType = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
+
 func (a *analyzer) checkNilness(pass *analysis.Pass) (interface{}, error) {
 	ssainput := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
 	for _, fn := range ssainput.SrcFuncs {
@@ -52,6 +54,7 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 	// we would need to retain the set of facts for each block.
 	seen := make([]bool, len(fn.Blocks)) // seen[i] means visit should ignore block i
 	var visit func(b *ssa.BasicBlock, stack []fact)
+
 	visit = func(b *ssa.BasicBlock, stack []fact) {
 		if seen[b.Index] {
 			return
@@ -61,68 +64,16 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 		// Report nil dereferences.
 		for _, instr := range b.Instrs {
 			switch instr := instr.(type) {
-			case ssa.CallInstruction:
-				// A nil receiver may be okay for type params.
-				cc := instr.Common()
-				if !(cc.IsInvoke() && typeparams.IsTypeParam(cc.Value.Type())) {
-					notNil(stack, instr, cc.Value, "nil dereference in "+cc.Description())
-				}
-			case *ssa.FieldAddr:
-				notNil(stack, instr, instr.X, "nil dereference in field selection")
-			case *ssa.IndexAddr:
-				switch typeparams.CoreType(instr.X.Type()).(type) {
-				case *types.Pointer: // *array
-					notNil(stack, instr, instr.X, "nil dereference in array index operation")
-				case *types.Slice:
-					// This is not necessarily a runtime error, because
-					// it is usually dominated by a bounds check.
-					if isRangeIndex(instr) {
-						notNil(stack, instr, instr.X, "range of nil slice")
-					} else {
-						notNil(stack, instr, instr.X, "index of nil slice")
+			case *ssa.Return:
+				// if return a nil value error
+				for _, res := range instr.Results {
+					if !types.Implements(res.Type(), errType) {
+						continue
 					}
-				}
-			case *ssa.MapUpdate:
-				notNil(stack, instr, instr.Map, "nil dereference in map update")
-			case *ssa.Range:
-				// (Not a runtime error, but a likely mistake.)
-				notNil(stack, instr, instr.X, "range over nil map")
-			case *ssa.Slice:
-				// A nilcheck occurs in ptr[:] iff ptr is a pointer to an array.
-				if is[*types.Pointer](instr.X.Type().Underlying()) {
-					notNil(stack, instr, instr.X, "nil dereference in slice operation")
-				}
-			case *ssa.Store:
-				notNil(stack, instr, instr.Addr, "nil dereference in store")
-			case *ssa.TypeAssert:
-				if !instr.CommaOk {
-					notNil(stack, instr, instr.X, "nil dereference in type assertion")
-				}
-			case *ssa.UnOp:
-				switch instr.Op {
-				case token.MUL: // *X
-					notNil(stack, instr, instr.X, "nil dereference in load")
-				case token.ARROW: // <-ch
-					// (Not a runtime error, but a likely mistake.)
-					notNil(stack, instr, instr.X, "receive from nil channel")
-				}
-			case *ssa.Send:
-				// (Not a runtime error, but a likely mistake.)
-				notNil(stack, instr, instr.Chan, "send to nil channel")
-			}
-		}
-
-		// Look for panics with nil value
-		for _, instr := range b.Instrs {
-			switch instr := instr.(type) {
-			case *ssa.Panic:
-				if nilnessOf(stack, instr.X) == isnil {
-					reportf("nilpanic", instr.Pos(), "panic with nil value")
-				}
-			case *ssa.SliceToArrayPointer:
-				nn := nilnessOf(stack, instr.X)
-				if nn == isnil && slice2ArrayPtrLen(instr) > 0 {
-					reportf("conversionpanic", instr.Pos(), "nil slice being cast to an array of len > 0 will always panic")
+					if _, ok := res.(*ssa.Const); ok {
+						continue
+					}
+					notNil(stack, instr, res, "return a error variable but it's nil")
 				}
 			}
 		}
@@ -138,13 +89,6 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 				// Degenerate condition:
 				// the nilness of both operands is known,
 				// and at least one of them is nil.
-				var adj string
-				if (xnil == ynil) == (binop.Op == token.EQL) {
-					adj = "tautological"
-				} else {
-					adj = "impossible"
-				}
-				reportf("cond", binop.Pos(), "%s condition: %s %s %s", adj, xnil, binop.Op, ynil)
 
 				// If tsucc's or fsucc's sole incoming edge is impossible,
 				// it is unreachable.  Prune traversal of it and
