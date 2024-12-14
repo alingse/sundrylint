@@ -19,6 +19,14 @@ func Do2() error {
 	return nil
 }
 
+func Call2() error {
+	err := Do()
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 func Call() error {
 	err1 := Do()
 	if err1 != nil {
@@ -26,7 +34,16 @@ func Call() error {
 	}
 	err2 := Do2()
 	if err2 != nil {
-		return err1 // want `return a error variable but it's nil`
+		a := 1
+		a = a + 2
+		fmt.Println(a)
+		if a > 10 {
+			fmt.Println(a)
+			if a > 11 {
+				return err1 // want `return a error variable but it's nil`
+			}
+		}
+
 	}
 	return nil
 }

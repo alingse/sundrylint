@@ -18,6 +18,28 @@ import (
 
 var errType = types.Universe.Lookup("error").Type().Underlying().(*types.Interface)
 
+func isErrType(res ssa.Value) bool {
+	return types.Implements(res.Type(), errType)
+}
+
+func isNil(res ssa.Value) bool {
+	v, ok := res.(*ssa.Const)
+	if ok && v.IsNil() {
+		return true
+	}
+	return false
+}
+
+func getCheckedErr(binOp *ssa.BinOp) ssa.Value {
+	if isErrType(binOp.X) && isNil(binOp.Y) {
+		return binOp.X
+	}
+	if isErrType(binOp.Y) && isNil(binOp.X) {
+		return binOp.Y
+	}
+	return nil
+}
+
 func (a *analyzer) checkNilness(pass *analysis.Pass) (interface{}, error) {
 	ssainput := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
 	for _, fn := range ssainput.SrcFuncs {
@@ -53,9 +75,9 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 	// soon as we've visited a subtree.  Had we traversed the CFG,
 	// we would need to retain the set of facts for each block.
 	seen := make([]bool, len(fn.Blocks)) // seen[i] means visit should ignore block i
-	var visit func(b *ssa.BasicBlock, stack []fact)
+	var visit func(b *ssa.BasicBlock, stack []fact, lastCheckedErr ssa.Value)
 
-	visit = func(b *ssa.BasicBlock, stack []fact) {
+	visit = func(b *ssa.BasicBlock, stack []fact, lastCheckedErr ssa.Value) {
 		if seen[b.Index] {
 			return
 		}
@@ -67,10 +89,14 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 			case *ssa.Return:
 				// if return a nil value error
 				for _, res := range instr.Results {
-					if !types.Implements(res.Type(), errType) {
+					if !isErrType(res) || isNil(res) {
 						continue
 					}
-					if _, ok := res.(*ssa.Const); ok {
+					isNil := nilnessOf(stack, res)
+					if isNil == isnonnil || isNil == unknown {
+						continue
+					}
+					if lastCheckedErr == nil || lastCheckedErr == res {
 						continue
 					}
 					notNil(stack, instr, res, "return a error variable but it's nil")
@@ -82,6 +108,11 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 		// is degenerate, and push a nilness fact on the stack when
 		// visiting its true and false successor blocks.
 		if binop, tsucc, fsucc := eq(b); binop != nil {
+			// check binop is err or
+			if lastErr := getCheckedErr(binop); lastErr != nil {
+				lastCheckedErr = lastErr
+			}
+
 			xnil := nilnessOf(stack, binop.X)
 			ynil := nilnessOf(stack, binop.Y)
 
@@ -105,7 +136,7 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 					if d == skip && len(d.Preds) == 1 {
 						continue
 					}
-					visit(d, stack)
+					visit(d, stack, lastCheckedErr)
 				}
 				return
 			}
@@ -136,7 +167,7 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 							s = append(s, newFacts.negate()...)
 						}
 					}
-					visit(d, s)
+					visit(d, s, lastCheckedErr)
 				}
 				return
 			}
@@ -169,7 +200,7 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 							extract0.Tuple == extract1.Tuple {
 							for _, d := range b.Dominees() {
 								if len(d.Preds) == 1 && d == fsucc {
-									visit(d, append(stack, fact{extract0, isnil}))
+									visit(d, append(stack, fact{extract0, isnil}), lastCheckedErr)
 								}
 							}
 						}
@@ -179,13 +210,13 @@ func runFunc(pass *analysis.Pass, fn *ssa.Function) {
 		}
 
 		for _, d := range b.Dominees() {
-			visit(d, stack)
+			visit(d, stack, lastCheckedErr)
 		}
 	}
 
 	// Visit the entry block.  No need to visit fn.Recover.
 	if fn.Blocks != nil {
-		visit(fn.Blocks[0], make([]fact, 0, 20)) // 20 is plenty
+		visit(fn.Blocks[0], make([]fact, 0, 20), nil) // 20 is plenty
 	}
 }
 
