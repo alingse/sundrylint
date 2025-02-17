@@ -51,7 +51,6 @@ func newAnalyzer(setting LinterSetting) (*analyzer, error) {
 
 func (a *analyzer) run(pass *analysis.Pass) (interface{}, error) {
 	_, _ = a.checkInspect(pass)
-	_, _ = a.checkNilness(pass)
 	return nil, nil
 }
 
