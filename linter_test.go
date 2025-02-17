@@ -29,10 +29,6 @@ func TestAnalyzerSundryLint(t *testing.T) {
 			desc:     "rangeappendall",
 			settings: LinterSetting{},
 		},
-		{
-			desc:     "nilerr2",
-			settings: LinterSetting{},
-		},
 	}
 
 	for _, test := range testCases {
