@@ -38,21 +38,4 @@ func AppendNoAssign(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (
 			Message:  SubLinterAppendNoAssignMessage,
 		},
 	}
-	//panic(stack[len(stack)-1])
-	/*
-		ast.Parent(node)
-		panic(fmt.Sprintf("node %#v", node))
-		/*
-				  if len(parentStack) > 0 {
-			            // 查看直接的父节点
-
-			                // 若为赋值语句，说明函数调用的结果被赋值
-			                fmt.Printf("CallExpr at %v is part of an assignment.\n", callExpr.Pos())
-			            default:
-			                // 其他情况：可能没有被赋值
-			                fmt.Printf("CallExpr at %v is not directly assigned.\n", callExpr.Pos())
-			            }
-			        }
-	*/
-	return nil
 }
