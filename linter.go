@@ -19,6 +19,7 @@ const (
 	SubLinterRangeappendall   = `rangeappendall`
 
 	SubLinterRangeappendallMessage = `append all its data while range it`
+	SubLinterAppendNoAssignMessage = `call strconv.AppendX but not keep func result`
 )
 
 type LinterSetting struct{}
@@ -59,6 +60,7 @@ func (a *analyzer) checkInspect(pass *analysis.Pass) (interface{}, error) {
 	checkNodes := []ast.Node{
 		(*ast.CallExpr)(nil),
 		(*ast.RangeStmt)(nil),
+		(*ast.AssignStmt)(nil),
 	}
 	inspectorInfo.WithStack(checkNodes, func(n ast.Node, push bool, stack []ast.Node) (proceed bool) {
 		a.process(pass, n, push, stack)
@@ -77,6 +79,7 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 		a.report(pass, LintTimeParseWrongArgsOrder(pass, node))
 		//a.report(pass, LintFuncResultUnused(pass, node, stack))
 		a.report(pass, LintRangeAppendAll(pass, node, stack))
+		a.report(pass, AppendNoAssign(pass, node, stack))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
 	}

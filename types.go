@@ -101,8 +101,10 @@ type FuncType struct {
 }
 
 func IsFuncType(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
-	if len(node.Args) != fnType.ArgsNum {
-		return false
+	if fnType.ArgsNum >= 0 {
+		if len(node.Args) != fnType.ArgsNum {
+			return false
+		}
 	}
 
 	if fnType.Variadic {
@@ -124,11 +126,16 @@ func IsFuncType(pass *analysis.Pass, node *ast.CallExpr, fnType FuncType) bool {
 			return false
 		}
 	}
-	if sign.Params().Len() != fnType.ArgsNum {
-		return false
+	if fnType.ArgsNum >= 0 {
+		if sign.Params().Len() != fnType.ArgsNum {
+			return false
+		}
 	}
-	if sign.Results().Len() != fnType.ResultsNum {
-		return false
+
+	if fnType.ResultsNum >= 0 {
+		if sign.Results().Len() != fnType.ResultsNum {
+			return false
+		}
 	}
 	return true
 }
