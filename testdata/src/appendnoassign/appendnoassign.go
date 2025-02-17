@@ -1,6 +1,7 @@
 package appendnoassign
 
 import (
+	"io"
 	"strconv"
 )
 
@@ -15,4 +16,8 @@ func Do() {
 
 func FormatInt(b []byte, c int64) []byte {
 	return strconv.AppendInt(b, c, 10)
+}
+
+func WriteTo(b []byte, w io.Writer, c int64) {
+	_, _ = w.Write(strconv.AppendInt(b, c, 10))
 }

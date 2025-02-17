@@ -23,10 +23,15 @@ func AppendNoAssign(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (
 	}
 	if len(stack) > 1 {
 		parent := stack[len(stack)-2]
-		switch parent.(type) {
+		switch parentNode := parent.(type) {
 		case *ast.AssignStmt, *ast.ReturnStmt:
 			return nil
-		default:
+		case *ast.CallExpr:
+			for _, arg := range parentNode.Args {
+				if arg == node {
+					return nil
+				}
+			}
 		}
 	}
 
