@@ -27,7 +27,7 @@ jobs:
           linter_command: sundrylint
           includes: "[\"call strconv.AppendX but not keep func result\"]"
           excludes: "[]"
-          issue_id: 4
+          issue_id: 6
           repo_url: ${{ inputs.repo_url }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
