@@ -7,8 +7,8 @@ on:
       source:
         description: |
           can be 'top.txt' or  'awesome.txt' or some 'https://xxx' download link
-          Default 'awesome.txt'
-        default: "awesome.txt"
+          Default 'top.txt'
+        default: "top.txt"
       count:
         description: |
           total submit repo count
