@@ -33,6 +33,10 @@ func TestAnalyzerSundryLint(t *testing.T) {
 			desc:     "appendnoassign",
 			settings: LinterSetting{},
 		},
+		{
+			desc:     "mustcompileout",
+			settings: LinterSetting{},
+		},
 	}
 
 	for _, test := range testCases {
