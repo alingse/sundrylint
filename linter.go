@@ -61,6 +61,7 @@ func (a *analyzer) checkInspect(pass *analysis.Pass) (interface{}, error) {
 		(*ast.CallExpr)(nil),
 		(*ast.RangeStmt)(nil),
 		(*ast.AssignStmt)(nil),
+		(*ast.ReturnStmt)(nil),
 	}
 	inspectorInfo.WithStack(checkNodes, func(n ast.Node, push bool, stack []ast.Node) (proceed bool) {
 		a.process(pass, n, push, stack)

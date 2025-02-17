@@ -12,3 +12,7 @@ func Do() {
 	b = strconv.AppendBool(b, true)
 	_ = b
 }
+
+func FormatInt(b []byte, c int64) []byte {
+	return strconv.AppendInt(b, c, 10)
+}
