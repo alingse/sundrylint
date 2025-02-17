@@ -26,6 +26,8 @@ func AppendNoAssign(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (
 		switch parentNode := parent.(type) {
 		case *ast.AssignStmt, *ast.ReturnStmt:
 			return nil
+		case *ast.KeyValueExpr, *ast.CompositeLit:
+			return nil
 		case *ast.CallExpr:
 			for _, arg := range parentNode.Args {
 				if arg == node {
