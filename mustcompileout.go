@@ -23,8 +23,11 @@ func MustCompileOut(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (
 
 	if len(stack) > 1 {
 		for _, parent := range stack[:len(stack)-1] {
-			switch parent.(type) {
+			switch parentNode := parent.(type) {
 			case *ast.FuncDecl:
+				if parentNode.Name.Name == "init" {
+					return nil
+				}
 				return []analysis.Diagnostic{
 					{
 						Pos:      node.Lparen,

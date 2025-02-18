@@ -17,3 +17,7 @@ func Eval(rg, s string) string {
 	r := regexp.MustCompile(rg)
 	return r.ReplaceAllString(s, "")
 }
+
+func init() {
+	_ = regexp.MustCompile(htmlTag)
+}
