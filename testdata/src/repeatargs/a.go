@@ -12,6 +12,10 @@ func Call(startDate string, endDate string) string {
 	return startDate + endDate
 }
 
+func Call2(a any, b any) {
+
+}
+
 func Do(s int64, t int64) string {
 	_ = s + t
 
@@ -19,6 +23,9 @@ func Do(s int64, t int64) string {
 
 	var a A
 	_ = Call(a.Name(), a.Name())
+
+	b := []any{}
+	Call2(len(b), len(b))
 
 	return ""
 }
