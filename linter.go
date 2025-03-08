@@ -21,6 +21,7 @@ const (
 	SubLinterRangeappendallMessage = `append all its data while range it`
 	SubLinterAppendNoAssignMessage = `call strconv.AppendX but not keep func result`
 	SubLinterMustCompileOutMessage = `call regexp.MustCompile with constant should be moved out of func`
+	SubLinterRepeatArgsMessage     = `call the func with repeated args from a sub-func`
 )
 
 type LinterSetting struct{}
@@ -86,6 +87,7 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 		a.report(pass, LintRangeAppendAll(pass, node, stack))
 		a.report(pass, AppendNoAssign(pass, node, stack))
 		a.report(pass, MustCompileOut(pass, node, stack))
+		a.report(pass, LintRepeatArgs(pass, node))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
 	}
