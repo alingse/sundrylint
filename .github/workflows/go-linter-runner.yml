@@ -23,7 +23,7 @@ jobs:
         with:
           action: run
           go_version: "1.24.0"
-          install_command: go install github.com/alingse/sundrylint@add-repeat-args
+          install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@add-repeat-args
           linter_command: sundrylint
           includes: "[\"call the func with repeat args from a sub-func\"]"
           excludes: "[]"
