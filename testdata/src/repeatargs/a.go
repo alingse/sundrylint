@@ -15,5 +15,5 @@ func Call(startDate string, endDate string) string {
 func Do(s int64, t int64) string {
 	_ = s + t
 
-	return Call(GetTime(s), GetTime(s)) // want `call the func with repeated args from a sub-func`
+	return Call(GetTime(s), GetTime(s)) // want `call the func with repeat args from a sub-func`
 }

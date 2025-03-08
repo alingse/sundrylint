@@ -21,7 +21,7 @@ const (
 	SubLinterRangeappendallMessage = `append all its data while range it`
 	SubLinterAppendNoAssignMessage = `call strconv.AppendX but not keep func result`
 	SubLinterMustCompileOutMessage = `call regexp.MustCompile with constant should be moved out of func`
-	SubLinterRepeatArgsMessage     = `call the func with repeated args from a sub-func`
+	SubLinterRepeatArgsMessage     = `call the func with repeat args from a sub-func`
 )
 
 type LinterSetting struct{}
