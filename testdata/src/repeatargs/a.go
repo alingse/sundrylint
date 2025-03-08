@@ -15,5 +15,17 @@ func Call(startDate string, endDate string) string {
 func Do(s int64, t int64) string {
 	_ = s + t
 
-	return Call(GetTime(s), GetTime(s)) // want `call the func with repeat args from a sub-func`
+	_ = Call(GetTime(s), GetTime(s)) // want `call the func with repeat args from a sub-func`
+
+	var a A
+	_ = Call(a.Name(), a.Name())
+
+	return ""
+}
+
+type A struct {
+}
+
+func (A) Name() string {
+	return "A"
 }

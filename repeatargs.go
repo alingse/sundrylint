@@ -9,10 +9,14 @@ import (
 func LintRepeatArgs(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diagnostic) {
 	argsMap := make(map[string][]any)
 	for _, arg := range node.Args {
-		_, ok := arg.(*ast.CallExpr)
+		argCall, ok := arg.(*ast.CallExpr)
 		if !ok {
 			continue
 		}
+		if len(argCall.Args) == 0 {
+			continue
+		}
+
 		code, err := GetCode(pass.Fset, arg)
 		if err != nil {
 			continue
