@@ -91,6 +91,15 @@ func IsBuiltinFunc(pass *analysis.Pass, fn *ast.CallExpr, name string) bool {
 	return bo.Name() == name
 }
 
+func IsBuiltinFunc2(pass *analysis.Pass, fn *ast.CallExpr) (*types.Builtin, bool) {
+	obj := GetFuncExprObject(pass, fn)
+	if obj == nil {
+		return nil, false
+	}
+	bo, ok := obj.(*types.Builtin)
+	return bo, ok
+}
+
 type FuncType struct {
 	FuncName    string
 	ArgsNum     int
