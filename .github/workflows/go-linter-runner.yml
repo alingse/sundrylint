@@ -23,11 +23,11 @@ jobs:
         with:
           action: run
           go_version: "1.24.0"
-          install_command: go build -o /usr/local/bin/sundrylint cmd/sundrylint/main.go
+          install_command: go install github.com/alingse/sundrylint@add-repeat-args
           linter_command: sundrylint
-          includes: "[\"call regexp.MustCompile with constant should be moved out of func\"]"
+          includes: "[\"call the func with repeat args from a sub-func\"]"
           excludes: "[]"
-          issue_id: 7
+          issue_id: 11
           repo_url: ${{ inputs.repo_url }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
