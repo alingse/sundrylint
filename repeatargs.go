@@ -39,6 +39,10 @@ func LintRepeatArgs(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diag
 		if _, ok := IsTypeNameFunc(pass, argCall); ok {
 			continue
 		}
+		if _, ok := argCall.Fun.(*ast.ArrayType); ok {
+			continue
+		}
+
 		allConst := true
 		for _, arg := range argCall.Args {
 			if !IsConst(pass, arg) {

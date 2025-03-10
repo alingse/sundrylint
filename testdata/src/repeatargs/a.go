@@ -32,6 +32,9 @@ func Do(s int64, t int64) string {
 
 	sz := int(1)
 	reflect.MakeSlice(reflect.TypeOf([]int{}), int(sz), int(sz))
+
+	s1 := "hello"
+	Call2([]byte(s1), []byte(s1))
 	return ""
 }
 
