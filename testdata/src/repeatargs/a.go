@@ -27,6 +27,8 @@ func Do(s int64, t int64) string {
 	b := []any{}
 	Call2(len(b), len(b))
 
+	_ = Call(GetTime(1), GetTime(2))
+
 	return ""
 }
 

@@ -19,6 +19,16 @@ func LintRepeatArgs(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diag
 		if _, ok := IsBuiltinFunc2(pass, argCall); ok {
 			continue
 		}
+		allConst := true
+		for _, arg := range argCall.Args {
+			if !IsConst(pass, arg) {
+				allConst = false
+				break
+			}
+		}
+		if allConst {
+			continue
+		}
 
 		code, err := GetCode(pass.Fset, arg)
 		if err != nil {
