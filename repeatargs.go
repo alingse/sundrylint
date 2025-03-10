@@ -2,11 +2,28 @@ package sundrylint
 
 import (
 	"go/ast"
+	"strings"
 
 	"golang.org/x/tools/go/analysis"
 )
 
+var noCheckFuncs = []string{
+	"print",
+}
+
 func LintRepeatArgs(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diagnostic) {
+	funcName, err := GetCode(pass.Fset, node.Fun)
+	if err != nil {
+		return nil
+	}
+
+	funcName = strings.ToLower(funcName)
+	for _, fn := range noCheckFuncs {
+		if strings.Contains(funcName, fn) {
+			return
+		}
+	}
+
 	argsMap := make(map[string][]any)
 	for _, arg := range node.Args {
 		argCall, ok := arg.(*ast.CallExpr)
@@ -17,6 +34,9 @@ func LintRepeatArgs(pass *analysis.Pass, node *ast.CallExpr) (ds []analysis.Diag
 			continue
 		}
 		if _, ok := IsBuiltinFunc2(pass, argCall); ok {
+			continue
+		}
+		if _, ok := IsTypeNameFunc(pass, argCall); ok {
 			continue
 		}
 		allConst := true

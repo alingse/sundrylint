@@ -100,6 +100,15 @@ func IsBuiltinFunc2(pass *analysis.Pass, fn *ast.CallExpr) (*types.Builtin, bool
 	return bo, ok
 }
 
+func IsTypeNameFunc(pass *analysis.Pass, fn *ast.CallExpr) (*types.TypeName, bool) {
+	obj := GetFuncExprObject(pass, fn)
+	if obj == nil {
+		return nil, false
+	}
+	bo, ok := obj.(*types.TypeName)
+	return bo, ok
+}
+
 type FuncType struct {
 	FuncName    string
 	ArgsNum     int
