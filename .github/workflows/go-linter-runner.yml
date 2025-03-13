@@ -29,5 +29,6 @@ jobs:
           excludes: "[]"
           issue_id: 11
           repo_url: ${{ inputs.repo_url }}
+          enable_testfile: false
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
