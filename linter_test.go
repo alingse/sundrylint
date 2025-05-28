@@ -41,6 +41,10 @@ func TestAnalyzerSundryLint(t *testing.T) {
 			desc:     "repeatargs",
 			settings: LinterSetting{},
 		},
+		{
+			desc:     "mapappend",
+			settings: LinterSetting{},
+		},
 	}
 
 	for _, test := range testCases {
