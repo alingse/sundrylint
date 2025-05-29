@@ -1,7 +1,6 @@
 package sundrylint
 
 import (
-	"fmt"
 	"go/ast"
 	"strings"
 
@@ -33,7 +32,6 @@ func LintMapAppend(pass *analysis.Pass, node *ast.CallExpr, stack []ast.Node) (d
 	}
 
 	// Check if left side is map index expression
-	fmt.Printf("find assignStmt %#v", assignStmt)
 	lhsMap, lhsKey, ok := isMapIndexExpr(assignStmt.Lhs[0])
 	if !ok {
 		return
