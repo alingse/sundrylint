@@ -88,6 +88,7 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 		a.report(pass, AppendNoAssign(pass, node, stack))
 		a.report(pass, MustCompileOut(pass, node, stack))
 		a.report(pass, LintRepeatArgs(pass, node))
+		a.report(pass, LintMapAppend(pass, node, stack))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
 	}
