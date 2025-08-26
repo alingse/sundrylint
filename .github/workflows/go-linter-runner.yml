@@ -23,9 +23,9 @@ jobs:
         with:
           action: run
           go_version: "1.24.0"
-          install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@append-wrong
+          install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@compare-ptr
           linter_command: sundrylint
-          includes: "[\"potential incorrect map append\"]"
+          includes: "[\"comparing pointers\"]"
           excludes: "[]"
           issue_id: 17
           repo_url: ${{ inputs.repo_url }}
