@@ -17,11 +17,13 @@ const (
 	SubLinterIteroverzero     = `iteroverzero`
 	SubLinterFuncresultunused = `funcresultunused`
 	SubLinterRangeappendall   = `rangeappendall`
+	SubLinterComparePtr       = `compareptr`
 
 	SubLinterRangeappendallMessage = `append all its data while range it`
 	SubLinterAppendNoAssignMessage = `call strconv.AppendX but not keep func result`
 	SubLinterMustCompileOutMessage = `call regexp.MustCompile with constant should be moved out of func`
 	SubLinterRepeatArgsMessage     = `call the func with repeat args from a sub-func`
+	SubLinterComparePtrMessage     = `comparing pointers with == or != can be error-prone`
 )
 
 type LinterSetting struct{}
@@ -67,6 +69,7 @@ func (a *analyzer) checkInspect(pass *analysis.Pass) (interface{}, error) {
 		(*ast.DeferStmt)(nil),
 		(*ast.KeyValueExpr)(nil),
 		(*ast.CompositeLit)(nil),
+		(*ast.BinaryExpr)(nil),
 	}
 	inspectorInfo.WithStack(checkNodes, func(n ast.Node, push bool, stack []ast.Node) (proceed bool) {
 		a.process(pass, n, push, stack)
@@ -91,6 +94,8 @@ func (a *analyzer) process(pass *analysis.Pass, n ast.Node, push bool, stack []a
 		a.report(pass, LintMapAppend(pass, node, stack))
 	case *ast.RangeStmt:
 		a.report(pass, LintIterOverZero(pass, node, stack))
+	case *ast.BinaryExpr:
+		a.report(pass, LintComparePtr(pass, node))
 	}
 }
 
