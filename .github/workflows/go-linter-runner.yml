@@ -27,7 +27,7 @@ jobs:
           linter_command: sundrylint
           includes: "[\"comparing pointers\"]"
           excludes: "[]"
-          issue_id: 17
+          issue_id: 19
           repo_url: ${{ inputs.repo_url }}
           enable_testfile: false
         env:
