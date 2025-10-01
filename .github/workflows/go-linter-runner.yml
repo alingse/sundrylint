@@ -25,9 +25,9 @@ jobs:
           go_version: "1.24.0"
           install_command: go install github.com/alingse/sundrylint/cmd/sundrylint@append-wrong
           linter_command: sundrylint
-          includes: "[\"potential incorrect map append\"]"
+          includes: "[\"potential incorrect map append\", \"potential data race: append operation in closure captures loop variable or shared slice\"]"
           excludes: "[]"
-          issue_id: 17
+          issue_id: 20
           repo_url: ${{ inputs.repo_url }}
           enable_testfile: false
         env:
